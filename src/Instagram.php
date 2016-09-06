@@ -766,22 +766,16 @@ class Instagram
    */
   public function deleteCommentsBulk($mediaId, $commentIds)
   {
-      if (!is_array($commentIds)) {
-          $commentIds = [$commentIds];
-      }
-
       $string = [];
-      foreach ($commentIds as $commentId) {
-          $string[] = "$commentId";
+      foreach ((array)$commentIds as $commentId) {
+          $string[] = (string)$commentId;
       }
-
-      $comment_ids_to_delete = implode(',', $string);
 
       $data = json_encode([
         '_uuid'                 => $this->uuid,
         '_uid'                  => $this->username_id,
         '_csrftoken'            => $this->token,
-        'comment_ids_to_delete' => $comment_ids_to_delete,
+        'comment_ids_to_delete' => implode(',', $string),
       ]);
 
       return $this->http->request("media/$mediaId/comment/bulk_delete/", SignatureUtils::generateSignature($data))[1];
